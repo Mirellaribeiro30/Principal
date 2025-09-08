@@ -1,0 +1,40 @@
+body {
+    margin: 0;
+    height: 100vh; /* Altura total da tela */
+    display: flex;
+    justify-content: center; /* Centraliza horizontalmente */
+    align-items: center; /* Centraliza verticalmente */
+    background: linear-gradient(to bottom, rgb(255, 255, 0), black); /* Degradê de amarelo a preto */
+}
+
+.container {
+    text-align: center; /* Centraliza o texto dentro do container */
+    background-color: rgba(255, 255, 255, 0.9); /* Fundo branco semi-transparente */
+    padding: 20px; /* Espaçamento interno */
+    border-radius: 10px; /* Bordas arredondadas */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Sombra ao redor do container */
+}
+
+input {
+    display: block; /* Cada input ocupa uma linha */
+    margin: 10px auto; /* Margem superior/inferior e centraliza */
+    padding: 10px; /* Espaçamento interno */
+    width: 80%; /* Largura dos inputs */
+    border: 1px solid #ccc; /* Borda clara para os inputs */
+    border-radius: 5px; /* Bordas arredondadas dos inputs */
+}
+
+button {
+    padding: 10px 20px; /* Espaçamento interno do botão */
+    background-color: black; /* Cor de fundo do botão */
+    color: white; /* Cor do texto do botão */
+    border: none; /* Remove borda padrão */
+    border-radius: 5px; /* Bordas arredondadas do botão */
+    cursor: pointer; /* Muda o cursor ao passar sobre o botão */
+}
+
+#message {
+    margin-top: 15px; /* Margem acima da mensagem */
+    font-weight: bold; /* Negrito para a mensagem */
+    color: red; /* Cor padrão para mensagens de erro */
+}

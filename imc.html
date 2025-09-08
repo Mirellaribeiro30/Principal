@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Calculadora de IMC</title>
+   <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #3f96dd; 
+        }
+        .container {
+            background-color: #68cdff; 
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        input {
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        #resultado {
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+   </style>
+</head>
+<body>
+   <div class="container">
+        <h1>Calculadora de IMC</h1>
+        <div>
+            <label for="peso">Peso (kg):</label>
+            <input type="number" id="peso" placeholder="Ex: 70.5">
+        </div>
+        <div>
+            <label for="altura">Altura (m):</label>
+            <input type="number" id="altura" placeholder="Ex: 1.75">
+        </div>
+        <button onclick="calcularIMC()">Calcular IMC</button>
+        <div id="resultado"></div>
+   </div>
+ 
+   <script>
+        function calcularIMC() {
+            const peso = parseFloat(document.getElementById('peso').value);
+            const altura = parseFloat(document.getElementById('altura').value);
+            const resultadoDiv = document.getElementById('resultado');
+ 
+            if (isNaN(peso) || isNaN(altura) || peso <= 0 || altura <= 0) {
+                resultadoDiv.textContent = "Por favor, insira peso e altura válidos.";
+                return;
+            }
+ 
+            const imc = peso / (altura * altura);
+            resultadoDiv.textContent = `Seu IMC é: ${imc.toFixed(2)}`;
+        }
+   </script>
+</body>
+</html>

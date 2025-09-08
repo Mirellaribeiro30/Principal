@@ -1,0 +1,24 @@
+body {
+    background: #d0e0d0; /* Cor de fundo: verde cinza claro */
+    font: normal 15pt Arial; /* Fonte padrão da página */
+}
+
+header {
+    color: white; /* Cor do texto do cabeçalho */
+    text-align: center; /* Centraliza o conteúdo do cabeçalho */
+}
+
+section {
+    background: white; /* Fundo branco para a seção principal */
+    border-radius: 10px; /* Bordas arredondadas */
+    padding: 15px; /* Espaçamento interno */
+    width: 500px; /* Largura da caixa */
+    margin: auto; /* Centraliza a caixa na página */
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.329); /* Sombra ao redor da caixa */
+}
+
+footer {
+    color: white; /* Cor do texto do rodapé */
+    text-align: center; /* Centraliza o texto */
+    font-style: italic; /* Deixa o texto em itálico */
+}

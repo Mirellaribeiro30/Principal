@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aluguel de Veículos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        header {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 20px;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+        }
+        main {
+            margin-top: 60px; /* Espaço para o cabeçalho fixo */
+            padding: 20px;
+            background-color: #FFFACD; /* Amarelo clarinho */
+        }
+        form {
+            margin-top: 20px;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .vehicle {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+        }
+        .vehicle img {
+            width: 300px; /* Tamanho da imagem aumentado */
+            height: auto;
+            margin-right: 10px;
+        }
+        #formularioAluguel {
+            display: none;
+        }
+        #mensagem {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Aluguel de Veículos</h1>
+</header>
+
+<main>
+    <h2>Página Inicial</h2>
+    <p>Bem-vindo ao nosso serviço de aluguel de veículos!</p>
+
+    <h3>Login</h3>
+    <form id="loginForm">
+        <input type="text" placeholder="Usuário" required>
+        <input type="password" placeholder="Senha" required>
+        <button type="submit">Entrar</button>
+        <p id="mensagem" style="color: red; display: none;"></p>
+    </form>
+
+    <div id="veiculos" style="display: none;">
+        <h3>Escolha um Veículo</h3>
+        <div class="vehicle">
+            <img src="carro-a.webp" alt="Carro A">
+            <div>
+                <button onclick="alugarVeiculo('Carro A')">Carro A</button>
+                <p>Descrição: Carro elegante vermelho, perfeito para passeios e viagens.</p>
+            </div>
+        </div>
+        <div class="vehicle">
+            <img src="carro-b.webp" alt="Carro B">
+            <div>
+                <button onclick="alugarVeiculo('Carro B')">Carro B</button>
+                <p>Descrição: Carro elegante cinza, perfeito para passeios e viagens.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="formularioAluguel">
+        <h3>Dados do Motorista</h3>
+        <form id="aluguelForm">
+            <input type="text" placeholder="Nome do Motorista" required>
+            <input type="text" placeholder="Número da CNH" required>
+            <button type="submit">Finalizar Pedido</button>
+        </form>
+        <p id="mensagemAluguel" style="color: green;"></p>
+    </div>
+</main>
+
+<script>
+    document.getElementById('loginForm').onsubmit = function(event) {
+        event.preventDefault();
+        const usuario = event.target[0].value;
+        const senha = event.target[1].value;
+
+        if (usuario === "Admin" && senha === "123@4") {
+            alert("Login efetuado com sucesso!");
+            document.getElementById('veiculos').style.display = 'block';
+            document.getElementById('mensagem').style.display = 'none'; // Esconder mensagem de erro
+        } else {
+            document.getElementById('mensagem').innerText = "Login inválido. Tente novamente.";
+            document.getElementById('mensagem').style.display = 'block'; // Mostrar mensagem de erro
+        }
+    };
+
+    function alugarVeiculo(veiculo) {
+        document.getElementById('veiculos').style.display = 'none';
+        document.getElementById('formularioAluguel').style.display = 'block';
+    }
+
+    document.getElementById('aluguelForm').onsubmit = function(event) {
+        event.preventDefault();
+        document.getElementById('mensagemAluguel').innerText = "Aluguel efetuado com sucesso!";
+        document.getElementById('aluguelForm').reset();
+    };
+</script>
+
+</body>
+</html>

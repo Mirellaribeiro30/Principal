@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculo de saldo</title>
+</head>
+<body>
+    <br><label for="salario">Salário</label><br>
+    <input type="number" id="salario">
+    
+    <br><br><label for="Despesa1">Despesa</label><br>
+    <input type="number" id="Despesa1">
+
+    <br><br><label for="Despesa2">Outra despesa</label><br>
+    <input type="number" id="Despesa2">
+
+    <br><br><label for="Despesa3">Mais uma despesa</label><br>
+    <input type="number" id="Despesa3">
+
+    <br><br><button onclick="calcularsaldo()">Calcular saldo</button>
+
+    <script>
+        function calcularsaldo(){
+            var salario=parseFloat(document.getElementById("salario").value);
+            var Despesa1=parseFloat(document.getElementById("Despesa1").value);
+            var Despesa2=parseFloat(document.getElementById("Despesa2").value);
+            var Despesa3=parseFloat(document.getElementById("Despesa3").value);
+            
+            var saldo=salario-Despesa1-Despesa2-Despesa3;
+
+            var total_despesas=Despesa1+Despesa2+Despesa3;
+            var percentual1=(Despesa1/total_despesas)*100;
+            var percentual2=(Despesa2/total_despesas)*100;
+            var percentual3=(Despesa3/total_despesas)*100;
+
+            document.getElementById("saldo").textContent=saldo.toFixed(2);
+            document.getElementById("total_despesas").textContent=total_despesas.toFixed(2)+"%";
+            document.getElementById("percentual1").textContent=percentual1.toFixed(2)+"%";
+            document.getElementById("percentual2").textContent=percentual2.toFixed(2)+"%";
+            document.getElementById("percentual3").textContent=percentual3.toFixed(2)+"%";
+
+        }
+    </script>
+    <p><span id="saldo"></span></p>
+    <p><span id="total_despesas"></span></p>
+    <p><span id="percentual1"></span></p>
+    <p><span id="percentual2"></span></p>
+    <p><span id="percentual3"></span></p>
+
+</body>
+</html>

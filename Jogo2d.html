@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Corrida Perspectiva Interior</title>
+<style>
+    body { margin:0; overflow:hidden; background:black; }
+    #restartButton {
+        display:none;
+        position:absolute;
+        font-size:20px;
+        padding:10px 20px;
+        background-color:#333;
+        color:white;
+        border:none;
+        cursor:pointer;
+        z-index:10;
+    }
+</style>
+</head>
+<body>
+<canvas id="gameCanvas"></canvas>
+<button id="restartButton">Recomeçar</button>
+
+<script>
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
+
+const carWidth = 50;
+const carHeight = 100;
+const roadWidth = 400;
+const laneCount = 3;
+const laneWidth = roadWidth / laneCount;
+
+let car = { x:0, y:0, width:carWidth, height:carHeight, speed:10 }; // Velocidade reduzida
+function resetCarPosition() {
+    car.x = canvas.width/2 - car.width/2;
+    car.y = canvas.height - car.height - 20;
+}
+resetCarPosition();
+
+let obstacles = [];
+let score = 0;
+let gameRunning = false;
+let obstacleSpeed = 5;
+let obstacleInterval;
+
+const restartButton = document.getElementById("restartButton");
+let keys = {};
+let countdown = 3;
+
+// Função para desenhar mensagens múltiplas com fundo preto
+function drawGameOverScreen() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle = "black";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    ctx.fillStyle = "white";
+    ctx.font = "60px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("GAME OVER", canvas.width/2, canvas.height/2 - 40);
+
+    ctx.font = "40px Arial";
+    ctx.fillText("Pontuação: " + score, canvas.width/2, canvas.height/2 + 20);
+
+    restartButton.style.display = "block";
+    restartButton.style.top = (canvas.height/2 + 80) + "px";
+    restartButton.style.left = "50%";
+    restartButton.style.transform = "translateX(-50%)";
+}
+
+// Mensagens centralizadas para contagem regressiva / START
+function drawMessage(text, yOffset=0, fontSize=60) {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle = "black";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    ctx.fillStyle = "white";
+    ctx.font = `${fontSize}px Arial`;
+    ctx.textAlign = "center";
+    ctx.fillText(text, canvas.width/2, canvas.height/2 + yOffset);
+}
+
+// Estrada
+function drawRoad() {
+    const roadX = (canvas.width - roadWidth)/2;
+    ctx.fillStyle = "#555";
+    ctx.fillRect(roadX, 0, roadWidth, canvas.height);
+
+    ctx.strokeStyle = "#fff";
+    ctx.lineWidth = 5;
+    ctx.setLineDash([20,20]);
+    for(let i=1;i<laneCount;i++){
+        let x = roadX + i*laneWidth;
+        ctx.beginPath();
+        ctx.moveTo(x,0);
+        ctx.lineTo(x,canvas.height);
+        ctx.stroke();
+    }
+    ctx.setLineDash([]);
+}
+
+// Desenha o carro do jogador como um carro realista simples
+function drawCar() {
+    const x = car.x;
+    const y = car.y;
+    const width = car.width;
+    const height = car.height;
+
+    // Corpo azul
+    ctx.fillStyle = "blue";
+    ctx.fillRect(x, y, width, height);
+
+    // Capô
+    ctx.fillStyle = "#0000aa";
+    ctx.fillRect(x, y, width, height*0.2);
+
+    // Vidro
+    ctx.fillStyle = "lightblue";
+    ctx.fillRect(x + width*0.25, y + height*0.2, width*0.5, height*0.3);
+
+    // Rodas
+    ctx.fillStyle = "black";
+    const wheelRadius = 5;
+    ctx.beginPath();
+    ctx.arc(x + 10, y + height - 10, wheelRadius, 0, Math.PI*2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(x + width - 10, y + height - 10, wheelRadius, 0, Math.PI*2);
+    ctx.fill();
+}
+
+// Obstáculos como carros
+function generateObstacle(){
+    const roadX = (canvas.width - roadWidth)/2;
+    let lane = Math.floor(Math.random()*laneCount);
+    let xPos = roadX + lane*laneWidth + (laneWidth-carWidth)/2;
+    obstacles.push({x:xPos, y:-100, width:carWidth, height:carHeight, speed:obstacleSpeed});
+}
+
+function drawObstacles(){
+    obstacles.forEach(obs=>{
+        let scale = 1 + obs.y/600;
+
+        // Corpo vermelho
+        ctx.fillStyle = "red";
+        ctx.fillRect(obs.x - obs.width*(scale-1)/2, obs.y, obs.width*scale, obs.height*scale);
+
+        // Capô
+        ctx.fillStyle = "#800000";
+        ctx.fillRect(obs.x - obs.width*(scale-1)/2, obs.y, obs.width*scale, obs.height*scale*0.2);
+
+        // Vidro
+        ctx.fillStyle = "lightblue";
+        ctx.fillRect(obs.x - obs.width*(scale-1)/2 + obs.width*scale*0.25, obs.y + obs.height*scale*0.2, obs.width*scale*0.5, obs.height*scale*0.3);
+
+        // Rodas
+        ctx.fillStyle = "black";
+        const wheelRadius = 5*scale;
+        ctx.beginPath();
+        ctx.arc(obs.x - obs.width*(scale-1)/2 + wheelRadius*2, obs.y + obs.height*scale - wheelRadius, wheelRadius, 0, Math.PI*2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(obs.x + obs.width*scale - obs.width*(scale-1)/2 - wheelRadius*2, obs.y + obs.height*scale - wheelRadius, wheelRadius, 0, Math.PI*2);
+        ctx.fill();
+    });
+}
+
+function moveObstacles(){
+    obstacles.forEach(obs=>obs.y += obs.speed);
+    obstacles = obstacles.filter(obs => obs.y < canvas.height + 100);
+}
+
+// Colisão
+function checkCollision(){
+    return obstacles.some(obs=>{
+        let scale = 1 + obs.y/600;
+        let obsLeft = obs.x - obs.width*(scale-1)/2;
+        let obsRight = obsLeft + obs.width*scale;
+        let obsTop = obs.y;
+        let obsBottom = obs.y + obs.height*scale;
+        return !(car.x>obsRight || car.x+car.width<obsLeft || car.y>obsBottom || car.y+car.height<obsTop);
+    });
+}
+
+// Pontuação no canto superior esquerdo
+function drawScore(){
+    ctx.fillStyle = "white";
+    ctx.font = "30px Arial";
+    ctx.textAlign = "left";
+    ctx.fillText("Pontuação: " + score, 20, 40);
+}
+
+// Loop do jogo
+function gameLoop(){
+    if(!gameRunning) return;
+
+    const roadLeft = (canvas.width - roadWidth)/2;
+    const roadRight = roadLeft + roadWidth;
+    if(keys["ArrowLeft"] && car.x > roadLeft + 5) car.x -= car.speed;
+    if(keys["ArrowRight"] && car.x + car.width < roadRight - 5) car.x += car.speed;
+
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    drawRoad();
+    drawCar();
+    drawObstacles();
+    drawScore();
+    moveObstacles();
+
+    if(checkCollision()){
+        gameRunning = false;
+        clearInterval(obstacleInterval);
+        drawGameOverScreen();
+        return;
+    }
+
+    score++;
+    if(score % 500 === 0) obstacleSpeed += 1;
+
+    requestAnimationFrame(gameLoop);
+}
+
+// Teclas
+document.addEventListener("keydown", e => keys[e.key] = true);
+document.addEventListener("keyup", e => keys[e.key] = false);
+
+// Reiniciar
+restartButton.addEventListener("click", ()=>{
+    restartButton.style.display = "none";
+    obstacles = [];
+    score = 0;
+    obstacleSpeed = 5;
+    resetCarPosition();
+    startCountdown();
+});
+
+// Contagem regressiva
+function startCountdown(){
+    if(countdown>0){
+        drawMessage(countdown);
+        countdown--;
+        setTimeout(startCountdown, 1000);
+    } else {
+        drawMessage("START", 0, 60);
+        setTimeout(()=>{
+            countdown = 3;
+            startGame();
+        },1000);
+    }
+}
+
+// Inicia jogo
+function startGame(){
+    gameRunning = true;
+    obstacleInterval = setInterval(generateObstacle, 1500);
+    gameLoop();
+}
+
+// Começa contagem regressiva
+window.onload = ()=> startCountdown();
+
+</script>
+</body>
+</html>

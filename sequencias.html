@@ -1,0 +1,36 @@
+<!DOCTYPE html> <!-- Informa ao navegador que o documento está em HTML5 -->
+<html lang="pt-BR"> <!-- Define o idioma do documento como português do Brasil -->
+
+<head>
+    <meta charset="UTF-8"> <!-- Suporte para acentos e caracteres especiais -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Garante que o site seja responsivo -->
+    <title>Vamos contar</title> <!-- Título exibido na aba do navegador -->
+    <link rel="stylesheet" href="sequencias.css"> <!-- Importa o arquivo de estilo externo -->
+</head>
+
+<body> <!-- Início do corpo do site -->
+
+    <header> <!-- Cabeçalho da página -->
+        <h1>Vamos contar</h1> <!-- Título principal da página -->
+    </header>
+
+    <section> <!-- Seção principal onde ficam os campos e o resultado -->
+        <div id="dados"> <!-- Área com os campos de entrada -->
+            <p>Início: <input type="number" name="inicio" id="start"></p> <!-- Campo para valor inicial -->
+            <p>🏁: <input type="number" name="fim" id="end"></p> <!-- Campo para valor final com emoji de bandeira -->
+            <p>Passo: <input type="number" name="passo" id="step"></p> <!-- Campo para o passo da contagem -->
+            <p><input type="button" value="Contar" onclick="contar()"></p> <!-- Botão que chama a função contar() -->
+        </div>
+
+        <div id="result"> <!-- Área onde será exibido o resultado -->
+            <p>Preparando a contagem...</p> <!-- Texto inicial padrão -->
+        </div>
+    </section>
+
+    <footer> <!-- Rodapé da página -->
+        <p>&copy; Polo 2025</p> <!-- Informações de direitos autorais -->
+    </footer>
+
+    <script src="sequencias.js"></script> <!-- Importa o código JavaScript externo -->
+</body>
+</html>

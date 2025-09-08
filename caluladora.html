@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Padrão</title>
+    <link rel="stylesheet" href="calculadora.css">
+</head>
+
+<body>
+    <div class="calculadora">
+        <div class="visor" id="visor">0</div>
+
+        <div class="botao">
+            <button class="botao" onclick="adicionarnumero('7')">7</button>
+            <button class="botao" onclick="adicionarnumero('8')">8</button>
+            <button class="botao" onclick="adicionarnumero('9')">9</button>
+            <button class="botao operador" onclick="adicionaroperador('/')">/</button>
+            <button class="botao" onclick="adicionarnumero('4')">4</button>
+            <button class="botao" onclick="adicionarnumero('5')">5</button>
+            <button class="botao" onclick="adicionarnumero('6')">6</button>
+            <button class="botao operador" onclick="adicionaroperador('*')">*</button>
+            <button class="botao" onclick="adicionarnumero('1')">1</button>
+            <button class="botao" onclick="adicionarnumero('2')">2</button>
+            <button class="botao" onclick="adicionarnumero('3')">3</button>
+            <button class="botao operador" onclick="adicionaroperador('-')">-</button>
+
+            <button class="botao" onclick="adicionarnumero('0')">0</button>
+            <button class="botao" onclick="adicionarnumero('.')">.</button>
+
+            <button class="botao igual" onclick="calcular()">=</button>
+            <button class="botao operador" onclick="adicionaroperador('+')">+</button>
+
+            <button class="botao" onclick="limparvisor()">C</button>
+        </div>
+    </div>
+
+    <script>
+        let visor = document.getElementById('visor');
+        let operador = null;
+        let primeirovalor = null;
+
+
+
+        function adicionarnumero(numero) {
+            if (visor.innerText === '0') {
+                visor.innerText = numero;
+            }
+            else {
+                visor.innerText += numero;
+            }
+
+        }
+
+
+
+
+        function adicionaroperador(operadorselecionado) {
+            operador = operadorselecionado;
+            primeirovalor = parseFloat(visor.innerText);
+            visor.innerText = '0';
+        }
+
+
+
+        function limparvisor() {
+            visor.innerText = '0';
+            operador = null;
+        }
+
+
+
+
+
+
+
+
+
+
+
+        function calcular() {
+            let segundovalor = parseFloat(visor.innerText);
+            let resultado;
+
+            switch (operador) {
+                case '+':
+                    resultado = primeirovalor + segundovalor;
+                    break
+                    case '-':
+                    resultado = primeirovalor - segundovalor;
+                    break
+                    case '*':
+                    resultado = primeirovalor * segundovalor;
+                    break
+                    case '/':
+                    resultado = primeirovalor / segundovalor;
+                    break
+            }
+
+            visor.innerText=resultado;
+            operador=null;
+            primeirovalor=resultado
+        }
+
+    </script>
+</body>
+
+</html>
