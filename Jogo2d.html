@@ -29,12 +29,12 @@ const ctx = canvas.getContext("2d");
 
 // ==================== SONS ====================
 let audioUnlocked = false;
-const bgMusic = new Audio("sons/musica.mp3"); // Música de fundo
+const bgMusic = new Audio("musica.mp3"); // Música de fundo
 bgMusic.loop = true;
 bgMusic.volume = 0.3;
-const beepSound = new Audio("sons/beep.mp3"); // Beep da contagem
-const startSound = new Audio("sons/start.mp3"); // Som START
-const crashSound = new Audio("sons/crash.mp3"); // Som colisão
+const beepSound = new Audio("beep.mp3"); // Beep da contagem
+const startSound = new Audio("start.mp3"); // Som START
+const crashSound = new Audio("crash.mp3"); // Som colisão
 
 function playSound(audio){
     if(audioUnlocked){
@@ -318,3 +318,4 @@ function startGame(){
 </script>
 </body>
 </html>
+
