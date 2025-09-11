@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Corrida Perspectiva Interior</title>
+<title>Corrida Perspectiva Interior com Sons</title>
 <style>
     body { margin:0; overflow:hidden; background:black; }
     #restartButton {
@@ -27,6 +27,23 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
+// ==================== SONS ====================
+let audioUnlocked = false;
+const bgMusic = new Audio("sons/musica.mp3"); // Música de fundo
+bgMusic.loop = true;
+bgMusic.volume = 0.3;
+const beepSound = new Audio("sons/beep.mp3"); // Beep da contagem
+const startSound = new Audio("sons/start.mp3"); // Som START
+const crashSound = new Audio("sons/crash.mp3"); // Som colisão
+
+function playSound(audio){
+    if(audioUnlocked){
+        audio.currentTime = 0;
+        audio.play();
+    }
+}
+
+// =================== VARIÁVEIS ===================
 function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -40,7 +57,7 @@ const roadWidth = 400;
 const laneCount = 3;
 const laneWidth = roadWidth / laneCount;
 
-let car = { x:0, y:0, width:carWidth, height:carHeight, speed:10 }; // Velocidade reduzida
+let car = { x:0, y:0, width:carWidth, height:carHeight, speed:10 };
 function resetCarPosition() {
     car.x = canvas.width/2 - car.width/2;
     car.y = canvas.height - car.height - 20;
@@ -56,8 +73,21 @@ let obstacleInterval;
 const restartButton = document.getElementById("restartButton");
 let keys = {};
 let countdown = 3;
+let countdownTimeout;
+let countdownActive = false;
 
-// Função para desenhar mensagens múltiplas com fundo preto
+// =================== DESENHO ===================
+function drawInitialScreen(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle = "black";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    ctx.fillStyle = "white";
+    ctx.font = "50px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("Clique para começar", canvas.width/2, canvas.height/2);
+}
+
 function drawGameOverScreen() {
     ctx.clearRect(0,0,canvas.width,canvas.height);
     ctx.fillStyle = "black";
@@ -75,9 +105,10 @@ function drawGameOverScreen() {
     restartButton.style.top = (canvas.height/2 + 80) + "px";
     restartButton.style.left = "50%";
     restartButton.style.transform = "translateX(-50%)";
+
+    playSound(crashSound);
 }
 
-// Mensagens centralizadas para contagem regressiva / START
 function drawMessage(text, yOffset=0, fontSize=60) {
     ctx.clearRect(0,0,canvas.width,canvas.height);
     ctx.fillStyle = "black";
@@ -89,7 +120,6 @@ function drawMessage(text, yOffset=0, fontSize=60) {
     ctx.fillText(text, canvas.width/2, canvas.height/2 + yOffset);
 }
 
-// Estrada
 function drawRoad() {
     const roadX = (canvas.width - roadWidth)/2;
     ctx.fillStyle = "#555";
@@ -108,26 +138,19 @@ function drawRoad() {
     ctx.setLineDash([]);
 }
 
-// Desenha o carro do jogador como um carro realista simples
 function drawCar() {
     const x = car.x;
     const y = car.y;
     const width = car.width;
     const height = car.height;
 
-    // Corpo azul
     ctx.fillStyle = "blue";
     ctx.fillRect(x, y, width, height);
-
-    // Capô
     ctx.fillStyle = "#0000aa";
     ctx.fillRect(x, y, width, height*0.2);
-
-    // Vidro
     ctx.fillStyle = "lightblue";
     ctx.fillRect(x + width*0.25, y + height*0.2, width*0.5, height*0.3);
 
-    // Rodas
     ctx.fillStyle = "black";
     const wheelRadius = 5;
     ctx.beginPath();
@@ -138,7 +161,6 @@ function drawCar() {
     ctx.fill();
 }
 
-// Obstáculos como carros
 function generateObstacle(){
     const roadX = (canvas.width - roadWidth)/2;
     let lane = Math.floor(Math.random()*laneCount);
@@ -150,19 +172,15 @@ function drawObstacles(){
     obstacles.forEach(obs=>{
         let scale = 1 + obs.y/600;
 
-        // Corpo vermelho
         ctx.fillStyle = "red";
         ctx.fillRect(obs.x - obs.width*(scale-1)/2, obs.y, obs.width*scale, obs.height*scale);
 
-        // Capô
         ctx.fillStyle = "#800000";
         ctx.fillRect(obs.x - obs.width*(scale-1)/2, obs.y, obs.width*scale, obs.height*scale*0.2);
 
-        // Vidro
         ctx.fillStyle = "lightblue";
         ctx.fillRect(obs.x - obs.width*(scale-1)/2 + obs.width*scale*0.25, obs.y + obs.height*scale*0.2, obs.width*scale*0.5, obs.height*scale*0.3);
 
-        // Rodas
         ctx.fillStyle = "black";
         const wheelRadius = 5*scale;
         ctx.beginPath();
@@ -179,7 +197,6 @@ function moveObstacles(){
     obstacles = obstacles.filter(obs => obs.y < canvas.height + 100);
 }
 
-// Colisão
 function checkCollision(){
     return obstacles.some(obs=>{
         let scale = 1 + obs.y/600;
@@ -191,7 +208,6 @@ function checkCollision(){
     });
 }
 
-// Pontuação no canto superior esquerdo
 function drawScore(){
     ctx.fillStyle = "white";
     ctx.font = "30px Arial";
@@ -199,7 +215,7 @@ function drawScore(){
     ctx.fillText("Pontuação: " + score, 20, 40);
 }
 
-// Loop do jogo
+// =================== LOOP ===================
 function gameLoop(){
     if(!gameRunning) return;
 
@@ -239,23 +255,58 @@ restartButton.addEventListener("click", ()=>{
     score = 0;
     obstacleSpeed = 5;
     resetCarPosition();
-    startCountdown();
+    showStartScreen();
 });
 
-// Contagem regressiva
+// =================== CONTAGEM REGRESSIVA ===================
 function startCountdown(){
-    if(countdown>0){
-        drawMessage(countdown);
-        countdown--;
-        setTimeout(startCountdown, 1000);
-    } else {
-        drawMessage("START", 0, 60);
-        setTimeout(()=>{
-            countdown = 3;
-            startGame();
-        },1000);
+    if(countdownActive) return;
+    countdownActive = true;
+    let current = countdown;
+
+    function next(){
+        if(!countdownActive) return;
+
+        if(current > 0){
+            drawMessage(current);
+            playSound(beepSound);
+            current--;
+            countdownTimeout = setTimeout(next, 1000);
+        } else {
+            countdownActive = false;
+            clearTimeout(countdownTimeout); // cancela beep pendente
+            drawMessage("START", 0, 60);
+            playSound(startSound);
+            setTimeout(()=>{
+                countdown = 3;
+                startGame();
+            },1000);
+        }
+    }
+
+    next();
+}
+
+// =================== TELA INICIAL ===================
+function showStartScreen(){
+    drawInitialScreen();
+    document.addEventListener("click", startOnClick, { once: true });
+}
+
+function startOnClick(){
+    unlockAudio();
+    startCountdown();
+}
+
+function unlockAudio(){
+    if(!audioUnlocked){
+        bgMusic.play();
+        audioUnlocked = true;
     }
 }
+
+// Começa mostrando a tela inicial
+window.onload = ()=> showStartScreen();
 
 // Inicia jogo
 function startGame(){
@@ -263,9 +314,6 @@ function startGame(){
     obstacleInterval = setInterval(generateObstacle, 1500);
     gameLoop();
 }
-
-// Começa contagem regressiva
-window.onload = ()=> startCountdown();
 
 </script>
 </body>
